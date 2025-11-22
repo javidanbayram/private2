@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To My Love</title>
+    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for 'Pacifico' (romantic font) --><link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the romantic feel */
+        @keyframes pulse-heart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* Modified 'float' animation for emojis to rise */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+            50% { transform: translateY(-50vh) rotate(5deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(-5deg); opacity: 0; }
+        }
+
+        .emoji-float {
+            animation: float linear infinite;
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            font-size: 20px;
+        }
+
+        /* Using a more expressive font for the romantic message */
+        .romantic-font {
+            font-family: 'Pacifico', cursive, sans-serif;
+        }
+
+        /* Fallback for the custom font and main body */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+
+        /* Set a custom gradient background */
+        .romantic-bg {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+        }
+    </style>
+</head>
+<body class="romantic-bg min-h-screen flex items-center justify-center p-4 text-gray-800 relative overflow-hidden">
+
+    <!-- Floating Emojis Container --><div id="emoji-container" class="absolute inset-0 z-0"></div>
+
+    <!-- Main Content Card --><div class="z-10 bg-white/95 backdrop-blur-sm p-8 md:p-12 max-w-lg w-full rounded-2xl shadow-2xl border-4 border-pink-300 transform transition-all duration-500 hover:shadow-pink-500/50">
+
+        <h1 class="text-3xl md:text-5xl font-extrabold text-center text-red-600 mb-4 romantic-font animate-in fade-in zoom-in" style="animation-duration: 1s;">
+            For My Dearest Love
+        </h1>
+
+        <p class="text-center text-gray-600 mb-8 italic">
+            A little space created just for you.
+        </p>
+
+        <!-- Initial Message Card --><div id="initial-message" class="text-center">
+            <svg class="w-16 h-16 mx-auto mb-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <p class="text-lg mb-6">
+                Press the button below to open a special message I wrote just for you.
+            </p>
+
+            <button id="reveal-button" onclick="revealMessage()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-red-300" style="animation: pulse-heart 2s infinite;">
+                Open My Heart
+            </button>
+        </div>
+
+        <!-- Hidden Romantic Message Card --><div id="romantic-message" class="hidden text-center bg-pink-100 p-6 rounded-xl border border-pink-300 shadow-inner">
+            <h2 class="text-2xl md:text-3xl font-bold text-red-700 mb-4 romantic-font">
+                My Promise
+            </h2>
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                You are my sun, my moon, and all my stars. Every single day with you is a gift I never knew I deserved. Thank you for your kindness, your laughter, and the way you make even the ordinary moments feel like magic. I love you more than words can say.
+            </p>
+            <p class="text-xl font-semibold text-red-600">
+                Forever Yours,
+                <br>
+                Javidan
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        // === JavaScript Logic ===
+
+        function revealMessage() {
+            const initialMessage = document.getElementById('initial-message');
+            const romanticMessage = document.getElementById('romantic-message');
+            const revealButton = document.getElementById('reveal-button');
+
+            // 1. Fade out the initial message
+            initialMessage.style.opacity = '0';
+            initialMessage.style.transition = 'opacity 0.5s ease-out';
+
+            // 2. Wait for the fade out, then hide it and show the romantic message
+            setTimeout(() => {
+                initialMessage.classList.add('hidden');
+                romanticMessage.classList.remove('hidden');
+                
+                // 3. Fade in the romantic message
+                romanticMessage.style.opacity = '0';
+                romanticMessage.style.transition = 'opacity 1s ease-in';
+                // Wait for the next frame to apply the opacity change for fade effect
+                requestAnimationFrame(() => {
+                    romanticMessage.style.opacity = '1';
+                });
+
+            }, 500); // 500ms matches the fade out transition duration
+        }
+
+        // === Floating Emojis Animation (modified for "rain" effect from bottom) ===
+        const emojiContainer = document.getElementById('emoji-container');
+        const romanticEmojis = ['❤️', '💖', '✨', '💕', '🥰', '🌹', '💞', '💜', '😘', '🌟', '🤍', '🧡']; // More variety!
+
+        function createEmoji() {
+            const emoji = document.createElement('div');
+            emoji.classList.add('emoji-float');
+            
+            // Randomly select an emoji
+            emoji.innerHTML = romanticEmojis[Math.floor(Math.random() * romanticEmojis.length)]; 
+
+            // Random initial position (bottom of the screen)
+            emoji.style.left = `${Math.random() * 100}vw`;
+            emoji.style.bottom = `-50px`; // Start well off-screen at the bottom
+            
+            // Random duration and delay for staggered effect
+            const duration = 8 + Math.random() * 7; // 8s to 15s for slower, longer float
+            const delay = Math.random() * 5; // 0s to 5s delay
+            
+            emoji.style.animationDuration = `${duration}s`;
+            emoji.style.animationDelay = `${delay}s`;
+            
+            // Random size variation
+            emoji.style.fontSize = `${15 + Math.random() * 25}px`; // Slightly larger
+            emoji.style.color = `hsl(${Math.random() * 30 + 330}, 80%, 70%)`; // Pinkish-red hues
+
+            emojiContainer.appendChild(emoji);
+
+            // Clean up the emoji element after its animation is complete
+            setTimeout(() => {
+                emoji.remove();
+            }, (duration + delay) * 1000);
+        }
+
+        // Start creating emojis on an interval
+        setInterval(createEmoji, 400); // More frequent emoji generation
+    </script>
+</body>
+</html>
