@@ -3,154 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To My Love</title>
-    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for 'Pacifico' (romantic font) --><link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <title>The Universe of Us | Javidan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@300;400;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for the romantic feel */
-        @keyframes pulse-heart {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+        html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #fff1f2; font-family: 'Inter', sans-serif; }
+        
+        /* Master Container */
+        .scroll-container { 
+            height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; 
+            scroll-behavior: smooth; display: none; /* Hidden until unlock */
+        }
+        section { 
+            height: 100vh; width: 100%; scroll-snap-align: start; 
+            position: relative; display: flex; align-items: center; justify-content: center; 
         }
 
-        /* Modified 'float' animation for emojis to rise */
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
-            50% { transform: translateY(-50vh) rotate(5deg); opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(-5deg); opacity: 0; }
-        }
-
-        .emoji-float {
-            animation: float linear infinite;
-            position: absolute;
-            pointer-events: none;
-            z-index: 0;
-            font-size: 20px;
-        }
-
-        /* Using a more expressive font for the romantic message */
-        .romantic-font {
-            font-family: 'Pacifico', cursive, sans-serif;
-        }
-
-        /* Fallback for the custom font and main body */
-        body {
-            font-family: "Inter", sans-serif;
-        }
-
-        /* Set a custom gradient background */
-        .romantic-bg {
+        /* Glass Vault Lock Screen */
+        #gatekeeper { 
+            position: fixed; inset: 0; z-index: 100; 
             background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            display: flex; align-items: center; justify-content: center; 
         }
+        .lock-card {
+            background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5); padding: 3rem; border-radius: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1); width: 90%; max-width: 400px;
+        }
+
+        /* Memories Track */
+        .memories-track {
+            display: flex; gap: 2rem; overflow-x: auto; padding: 2rem; width: 100%;
+            scroll-snap-type: x mandatory; scrollbar-width: none;
+        }
+        .memories-track::-webkit-scrollbar { display: none; }
+        .memory-card {
+            flex: 0 0 300px; height: 400px; scroll-snap-align: center;
+            border-radius: 2rem; background: white; border: 4px solid white;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        /* Interactive Layers */
+        .romantic-font { font-family: 'Pacifico', cursive; }
+        #scratch-canvas { position: absolute; top: 0; left: 0; z-index: 20; touch-action: none; }
+        .gravity-heart { position: absolute; pointer-events: none; font-size: 2rem; transition: transform 0.1s; }
+        #constellation-canvas { position: absolute; inset: 0; cursor: crosshair; }
+        .odometer { font-variant-numeric: tabular-nums; }
+
+        /* --- 3D VAULT LETTER STYLES --- */
+        .letter-scene { perspective: 1000px; }
+        .parchment {
+            width: 320px; min-height: 400px; background: #fdf6e3; padding: 30px;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.15); border-radius: 2px;
+            transform-style: preserve-3d; transition: transform 0.1s ease-out, all 0.8s ease;
+            font-family: 'Dancing Script', cursive; position: relative;
+        }
+        .wax-seal {
+            width: 60px; height: 60px; background: #b91c1c; border-radius: 50%;
+            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); display: flex; align-items: center;
+            justify-content: center; cursor: pointer; color: white; border: 2px solid #991b1b;
+            z-index: 10; transition: transform 0.3s;
+        }
+        .wax-seal:hover { transform: translateX(-50%) scale(1.1); }
+        .letter-content { opacity: 0; transition: opacity 1s ease 0.5s; font-size: 1.2rem; line-height: 1.6; }
+        .letter-revealed .letter-content { opacity: 1; }
+        .letter-revealed .wax-seal { display: none; }
+        .letter-revealed .parchment { width: 90vw; max-width: 600px; transform: rotate(0) !important; padding: 50px; }
     </style>
 </head>
-<body class="romantic-bg min-h-screen flex items-center justify-center p-4 text-gray-800 relative overflow-hidden">
+<body>
 
-    <!-- Floating Emojis Container --><div id="emoji-container" class="absolute inset-0 z-0"></div>
-
-    <!-- Main Content Card --><div class="z-10 bg-white/95 backdrop-blur-sm p-8 md:p-12 max-w-lg w-full rounded-2xl shadow-2xl border-4 border-pink-300 transform transition-all duration-500 hover:shadow-pink-500/50">
-
-        <h1 class="text-3xl md:text-5xl font-extrabold text-center text-red-600 mb-4 romantic-font animate-in fade-in zoom-in" style="animation-duration: 1s;">
-            For My Dearest Love
-        </h1>
-
-        <p class="text-center text-gray-600 mb-8 italic">
-            A little space created just for you.
-        </p>
-
-        <!-- Initial Message Card --><div id="initial-message" class="text-center">
-            <svg class="w-16 h-16 mx-auto mb-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-            <p class="text-lg mb-6">
-                Press the button below to open a special message I wrote just for you.
-            </p>
-
-            <button id="reveal-button" onclick="revealMessage()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-red-300" style="animation: pulse-heart 2s infinite;">
-                Open My Heart
-            </button>
+    <div id="gatekeeper">
+        <div class="lock-card text-center">
+            <div class="text-4xl mb-4">💎</div>
+            <h1 class="romantic-font text-4xl text-rose-600 mb-2">Memory Vault</h1>
+            <p class="text-rose-400 text-sm mb-8">Verification Required</p>
+            <input type="password" id="entry-pin" placeholder="••••••••" maxlength="8" 
+                class="text-center w-full bg-white/50 border-2 border-rose-200 py-3 rounded-2xl text-xl mb-4 outline-none focus:border-rose-400 tracking-widest">
+            <button onclick="unlockVault()" class="w-full bg-rose-500 text-white font-bold py-3 rounded-2xl hover:bg-rose-600 transition shadow-lg">Unlock Universe</button>
         </div>
+    </div>
 
-        <!-- Hidden Romantic Message Card --><div id="romantic-message" class="hidden text-center bg-pink-100 p-6 rounded-xl border border-pink-300 shadow-inner">
-            <h2 class="text-2xl md:text-3xl font-bold text-red-700 mb-4 romantic-font">
-                My Promise
-            </h2>
-            <p class="text-lg text-gray-700 leading-relaxed mb-6">
-                You are my sun, my moon, and all my stars. Every single day with you is a gift I never knew I deserved. Thank you for your kindness, your laughter, and the way you make even the ordinary moments feel like magic. I love you more than words can say.
-            </p>
-            <p class="text-xl font-semibold text-red-600">
-                Forever Yours,
-                <br>
-                Javidan
-            </p>
-        </div>
+    <div class="scroll-container" id="main-universe">
+
+        <section class="bg-rose-100">
+            <div class="text-center">
+                <h1 class="romantic-font text-7xl text-rose-600 animate-pulse">It's Always Been You</h1>
+                <p class="mt-4 text-rose-400 italic tracking-widest uppercase">Scroll to begin our journey</p>
+            </div>
+        </section>
+
+        <section class="bg-white">
+            <div class="max-w-4xl px-6 text-center">
+                <h2 class="romantic-font text-5xl text-rose-500 mb-12">The World Since Us</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="p-10 bg-rose-50 rounded-[3rem] border border-rose-100 shadow-inner">
+                        <p class="text-xs uppercase text-rose-400 mb-2 font-bold">Time Spent Growing</p>
+                        <p id="timer" class="text-3xl font-semibold text-rose-600 odometer">0d 0h 0m 0s</p>
+                    </div>
+                    <div class="p-10 bg-pink-50 rounded-[3rem] border border-pink-100 shadow-inner">
+                        <p class="text-xs uppercase text-pink-400 mb-2 font-bold">Beats My Heart Skipped</p>
+                        <p id="heartbeats" class="text-3xl font-semibold text-pink-600 odometer">0</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-rose-50">
+            <div class="w-full text-center">
+                <h2 class="romantic-font text-5xl text-rose-600 mb-8">Memories shared</h2>
+                <div class="memories-track px-10">
+                    <div class="memory-card bg-rose-100 flex flex-col">
+                        <div class="flex-grow flex items-center justify-center text-7xl">📸</div>
+                        <div class="bg-white p-6 rounded-b-[1.7rem] text-left">
+                            <h4 class="font-bold text-rose-600">The Beginning</h4>
+                            <p class="text-sm text-gray-500 italic font-light leading-snug">The world turned vivid the moment you arrived.</p>
+                        </div>
+                    </div>
+                    <div class="memory-card bg-pink-100 flex flex-col">
+                        <div class="flex-grow flex items-center justify-center text-7xl">✈️</div>
+                        <div class="bg-white p-6 rounded-b-[1.7rem] text-left">
+                            <h4 class="font-bold text-rose-600">The Adventure</h4>
+                            <p class="text-sm text-gray-500 italic font-light leading-snug">To every road trip and late night laugh.</p>
+                        </div>
+                    </div>
+                    <div class="memory-card bg-amber-50 flex flex-col">
+                        <div class="flex-grow flex items-center justify-center text-7xl">🏡</div>
+                        <div class="bg-white p-6 rounded-b-[1.7rem] text-left">
+                            <h4 class="font-bold text-rose-600">The Home</h4>
+                            <p class="text-sm text-gray-500 italic font-light leading-snug">You are my safe space, my peace.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-8 text-gray-300 text-xs italic">← Swipe to browse history →</p>
+            </div>
+        </section>
+
+        <section class="bg-slate-900">
+            <div class="absolute inset-0 z-10 flex items-center justify-center bg-rose-50 p-8 text-center">
+                <div class="max-w-md">
+                    <h3 class="romantic-font text-4xl text-rose-600 mb-6">Beneath the surface</h3>
+                    <p class="text-xl italic">"I will spend my forever proving how much you mean to me."</p>
+                    <p class="mt-8 text-2xl font-bold text-rose-500">- Javidan</p>
+                </div>
+            </div>
+            <canvas id="scratch-canvas"></canvas>
+            <div class="absolute top-10 w-full z-30 pointer-events-none text-center">
+                <span class="bg-white/10 text-white px-6 py-2 rounded-full text-xs uppercase backdrop-blur-md">Scratch away the day...</span>
+            </div>
+        </section>
+
+        <section class="bg-white overflow-hidden">
+            <div class="z-10 text-center pointer-events-none">
+                <h2 class="romantic-font text-5xl text-rose-500">Gravitational Pull</h2>
+                <p class="text-gray-400 mt-2">Everything of mine orbits around you</p>
+            </div>
+            <div class="gravity-heart">❤️</div><div class="gravity-heart">💖</div><div class="gravity-heart">🌸</div>
+            <div class="gravity-heart">✨</div><div class="gravity-heart">🥰</div><div class="gravity-heart">🌹</div>
+        </section>
+
+        <section class="bg-slate-950">
+            <canvas id="constellation-canvas"></canvas>
+            <div class="z-20 text-center pointer-events-none">
+                <h2 class="romantic-font text-4xl text-white opacity-40">Connect the stars</h2>
+                <p id="hint" class="text-slate-500 text-xs mt-2 uppercase tracking-widest">Move your mouse to reveal the connection</p>
+            </div>
+            <div id="star-reveal" class="hidden z-30 romantic-font text-6xl text-white animate-bounce">I LOVE YOU</div>
+        </section>
+
+        <section class="bg-[#fdf6e3]/30" id="letter-section">
+            <div class="letter-scene" id="scene">
+                <div class="parchment" id="parchment">
+                    <div class="letter-content text-rose-900 text-center">
+                        <p class="text-3xl mb-4">My Dearest,</p>
+                        <p>I wanted to create a world where time stands still just for us. Looking at the distance we've traveled and the memories we've made, I am overwhelmed by how lucky I am to call you mine. You aren't just a part of my life; you are the reason my life is beautiful.</p>
+                        <p class="mt-6">Thank you for being you.</p>
+                        <p class="mt-6 text-2xl">Forever yours,<br>Javidan</p>
+                    </div>
+                    <div class="wax-seal" onclick="revealLetter()">❤</div>
+                </div>
+            </div>
+        </section>
 
     </div>
 
     <script>
-        // === JavaScript Logic ===
+        // MASTER CONFIG
+        const passcode = "03012025";
+        const anniversary = new Date('2025-01-03T00:00:00'); 
 
-        function revealMessage() {
-            const initialMessage = document.getElementById('initial-message');
-            const romanticMessage = document.getElementById('romantic-message');
-            const revealButton = document.getElementById('reveal-button');
-
-            // 1. Fade out the initial message
-            initialMessage.style.opacity = '0';
-            initialMessage.style.transition = 'opacity 0.5s ease-out';
-
-            // 2. Wait for the fade out, then hide it and show the romantic message
-            setTimeout(() => {
-                initialMessage.classList.add('hidden');
-                romanticMessage.classList.remove('hidden');
-                
-                // 3. Fade in the romantic message
-                romanticMessage.style.opacity = '0';
-                romanticMessage.style.transition = 'opacity 1s ease-in';
-                // Wait for the next frame to apply the opacity change for fade effect
-                requestAnimationFrame(() => {
-                    romanticMessage.style.opacity = '1';
-                });
-
-            }, 500); // 500ms matches the fade out transition duration
+        function unlockVault() {
+            if(document.getElementById('entry-pin').value === passcode) {
+                document.getElementById('gatekeeper').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('gatekeeper').style.display = 'none';
+                    document.getElementById('main-universe').style.display = 'block';
+                    confetti(); initCan(); initStars(); setInterval(updateStats, 1000);
+                }, 800);
+            } else { alert("Verification Failed. Hint: First 'I Love You'."); }
         }
 
-        // === Floating Emojis Animation (modified for "rain" effect from bottom) ===
-        const emojiContainer = document.getElementById('emoji-container');
-        const romanticEmojis = ['❤️', '💖', '✨', '💕', '🥰', '🌹', '💞', '💜', '😘', '🌟', '🤍', '🧡']; // More variety!
+        // Stats Logic
+        function updateStats() {
+            const now = new Date();
+            let d = now - anniversary;
+            if (d < 0) d = 0;
 
-        function createEmoji() {
-            const emoji = document.createElement('div');
-            emoji.classList.add('emoji-float');
-            
-            // Randomly select an emoji
-            emoji.innerHTML = romanticEmojis[Math.floor(Math.random() * romanticEmojis.length)]; 
+            const days = Math.floor(d/86400000);
+            const hours = Math.floor((d/3600000)%24);
+            const mins = Math.floor((d/60000)%60);
+            const secs = Math.floor((d/1000)%60);
 
-            // Random initial position (bottom of the screen)
-            emoji.style.left = `${Math.random() * 100}vw`;
-            emoji.style.bottom = `-50px`; // Start well off-screen at the bottom
-            
-            // Random duration and delay for staggered effect
-            const duration = 8 + Math.random() * 7; // 8s to 15s for slower, longer float
-            const delay = Math.random() * 5; // 0s to 5s delay
-            
-            emoji.style.animationDuration = `${duration}s`;
-            emoji.style.animationDelay = `${delay}s`;
-            
-            // Random size variation
-            emoji.style.fontSize = `${15 + Math.random() * 25}px`; // Slightly larger
-            emoji.style.color = `hsl(${Math.random() * 30 + 330}, 80%, 70%)`; // Pinkish-red hues
-
-            emojiContainer.appendChild(emoji);
-
-            // Clean up the emoji element after its animation is complete
-            setTimeout(() => {
-                emoji.remove();
-            }, (duration + delay) * 1000);
+            document.getElementById('timer').innerText = `${days}d ${hours}h ${mins}m ${secs}s`;
+            const beats = Math.floor((d/60000)*75);
+            document.getElementById('heartbeats').innerText = beats.toLocaleString();
         }
 
-        // Start creating emojis on an interval
-        setInterval(createEmoji, 400); // More frequent emoji generation
+        // Scratch Logic
+        const can = document.getElementById('scratch-canvas'), ctx = can.getContext('2d');
+        function initCan() { can.width = innerWidth; can.height = innerHeight; ctx.fillStyle = '#1e293b'; ctx.fillRect(0,0,can.width,can.height); ctx.globalCompositeOperation = 'destination-out'; }
+        
+        // Input Handling
+        window.addEventListener('mousemove', (e) => {
+            // Scratch functionality
+            if(ctx) { ctx.beginPath(); ctx.arc(e.clientX, e.clientY, 40, 0, 7); ctx.fill(); }
+
+            // Gravity Hearts Logic
+            const hearts = document.querySelectorAll('.gravity-heart');
+            hearts.forEach((h, i) => {
+                setTimeout(() => { h.style.left = `${e.clientX}px`; h.style.top = `${e.clientY}px`; h.style.transform = `translate(-50%, -50%)`; }, (i + 1) * 20);
+            });
+
+            // 3D Letter Tilt Logic
+            const parchment = document.getElementById('parchment');
+            if(parchment && !parchment.classList.contains('letter-revealed')) {
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 15;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 15;
+                parchment.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            }
+        });
+
+        function revealLetter() {
+            document.getElementById('parchment').classList.add('letter-revealed');
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.8 } });
+        }
+
+        // Constellation Logic
+        const scan = document.getElementById('constellation-canvas'), sctx = scan.getContext('2d');
+        let stars = [], foundStars = 0;
+        function initStars() {
+            scan.width = innerWidth; scan.height = innerHeight;
+            for(let i=0; i<15; i++) stars.push({ x: Math.random()*innerWidth, y: Math.random()*innerHeight, found: false });
+            drawStars();
+        }
+        function drawStars() {
+            sctx.clearRect(0,0,innerWidth,innerHeight); sctx.fillStyle = "white";
+            stars.forEach(s => { sctx.beginPath(); sctx.arc(s.x, s.y, 2, 0, 7); sctx.fill(); });
+        }
+        scan.onmousemove = (e) => {
+            stars.forEach(s => {
+                if(Math.hypot(s.x - e.clientX, s.y - e.clientY) < 60 && !s.found) {
+                    s.found = true; foundStars++;
+                    if(foundStars >= 10) document.getElementById('star-reveal').classList.remove('hidden');
+                }
+            });
+            drawStars(); sctx.strokeStyle = "rgba(255,255,255,0.1)";
+            stars.filter(s => s.found).forEach(s => { sctx.beginPath(); sctx.moveTo(s.x, s.y); sctx.lineTo(e.clientX, e.clientY); sctx.stroke(); });
+        };
+        
+        window.onresize = () => { initCan(); initStars(); };
     </script>
 </body>
 </html>
